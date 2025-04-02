@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>МЭШ - Электронный журнал</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            background-color: #f5f6f5;
+            color: #333;
+            line-height: 1.6;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            min-height: 90vh;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            transition: background-color 0.5s ease;
+        }
+        .header {
+            background: linear-gradient(90deg, #005eb8, #00a1d6);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 8px 8px 0 0;
+            transition: background 0.5s ease;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 500;
+        }
+        .user-profile {
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            padding: 10px 0;
+            background: #fff;
+            border-bottom: 2px solid #e0e0e0;
+            flex-wrap: wrap;
+            transition: background-color 0.5s ease, border-color 0.5s ease;
+        }
+        .tab-button {
+            padding: 12px 25px;
+            background: #f1f3f5;
+            border: none;
+            border-radius: 5px 5px 0 0;
+            cursor: pointer;
+            font-weight: 600;
+            color: #555;
+            transition: all 0.3s ease;
+        }
+        .tab-button.active, .tab-button:hover {
+            background: #005eb8;
+            color: white;
+            transform: translateY(-2px);
+        }
+        .tab-content {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin: 15px 0;
+            transition: background-color 0.5s ease;
+        }
+        th, td {
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            text-align: center;
+            transition: border-color 0.5s ease;
+        }
+        th {
+            background: #005eb8;
+            color: white;
+            font-weight: 600;
+            transition: background-color 0.5s ease;
+        }
+        .schedule-table th:first-child, .homework-table th:first-child {
+            background: #f8f9fa;
+            color: #333;
+            width: 15%;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+        input[type="number"], select {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+            width: 50px;
+            transition: border-color 0.3s ease, background-color 0.5s ease, color 0.5s ease;
+        }
+        select, input[type="text"], input[type="password"], textarea, input[type="file"] {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            width: 100%;
+            margin: 5px 0;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease, background-color 0.5s ease, color 0.5s ease;
+        }
+        select:focus, input:focus, textarea:focus {
+            border-color: #005eb8;
+            outline: none;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+        button:hover {
+            background: #218838;
+            transform: scale(1.05);
+        }
+        .notification {
+            background: #e8f0fe;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #005eb8;
+            transition: all 0.3s ease, background-color 0.5s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .notification:hover {
+            transform: translateX(5px);
+        }
+        .auth-form {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            width: 400px;
+            z-index: 1000;
+            display: none;
+            animation: slideIn 0.5s ease-out;
+            transition: background-color 0.5s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translate(-50%, -60%); opacity: 0; }
+            to { transform: translate(-50%, -50%); opacity: 1; }
+        }
+        .auth-form.active {
+            display: block;
+        }
+        .form-title {
+            color: #005eb8;
+            margin-bottom: 20px;
+            text-align: center;
+            transition: color 0.5s ease;
+        }
+        .error-message {
+            color: #dc3545;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+        .grade-2 { background-color: #ffcccc; }
+        .grade-3 { background-color: #fff3cd; }
+        .grade-4 { background-color: #d4edda; }
+        .grade-5 { background-color: #c3e6cb; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+            animation: zoomIn 0.4s ease-out;
+            transition: background-color 0.5s ease;
+        }
+        @keyframes zoomIn {
+            from { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+            to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        .modal.active {
+            display: block;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            animation: fadeInOverlay 0.3s ease-in;
+        }
+        @keyframes fadeInOverlay {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .overlay.active {
+            display: block;
+        }
+        canvas {
+            max-width: 100%;
+            margin: 20px 0;
+        }
+
+        /* Dark Theme */
+        body.dark-theme {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+        .dark-theme .container {
+            background: #2a2a2a;
+            box-shadow: 0 2px 10px rgba(255,255,255,0.05);
+        }
+        .dark-theme .header {
+            background: linear-gradient(90deg, #003087, #0077b6);
+        }
+        .dark-theme .tabs {
+            background: #2a2a2a;
+            border-bottom: 2px solid #444;
+        }
+        .dark-theme .tab-button {
+            background: #3a3a3a;
+            color: #e0e0e0;
+        }
+        .dark-theme .tab-button.active, .dark-theme .tab-button:hover {
+            background: #0077b6;
+        }
+        .dark-theme table {
+            background: #2a2a2a;
+        }
+        .dark-theme th, .dark-theme td {
+            border: 1px solid #444;
+        }
+        .dark-theme th {
+            background: #003087;
+        }
+        .dark-theme .schedule-table th:first-child, .dark-theme .homework-table th:first-child {
+            background: #3a3a3a;
+            color: #e0e0e0;
+        }
+        .dark-theme input, .dark-theme select, .dark-theme textarea {
+            background: #3a3a3a;
+            color: #e0e0e0;
+            border: 1px solid #555;
+        }
+        .dark-theme input:focus, .dark-theme select:focus, .dark-theme textarea:focus {
+            border-color: #0077b6;
+        }
+        .dark-theme .notification {
+            background: #3a3a3a;
+            border-left: 4px solid #0077b6;
+        }
+        .dark-theme .auth-form, .dark-theme .modal {
+            background: #2a2a2a;
+        }
+        .dark-theme .form-title {
+            color: #0077b6;
+        }
+    </style>
+</head>
+<body>
+    <div id="register-form" class="auth-form">
+        <h2 class="form-title">Регистрация в МЭШ</h2>
+        <input type="text" id="reg-username" placeholder="Логин" required>
+        <input type="password" id="reg-password" placeholder="Пароль" required>
+        <input type="text" id="reg-name" placeholder="ФИО (например, Иванова Е.А.)" required>
+        <button onclick="register()">Зарегистрироваться</button>
+        <p style="text-align: center;">Уже есть аккаунт? <a href="#" onclick="showLogin(event)">Войти</a></p>
+        <div class="error-message" id="reg-error"></div>
+    </div>
+
+    <div id="login-form" class="auth-form active">
+        <h2 class="form-title">Вход в МЭШ</h2>
+        <input type="text" id="login-username" placeholder="Логин" value="denispanchenko_1992" required>
+        <input type="password" id="login-password" placeholder="Пароль" value="denisi_tryd92" required>
+        <button onclick="login()">Войти</button>
+        <p style="text-align: center;">Нет аккаунта? <a href="#" onclick="showRegister(event)">Зарегистрироваться</a></p>
+        <div class="error-message" id="login-error"></div>
+    </div>
+
+    <div class="container" id="main-content" style="display: none;">
+        <div class="header">
+            <h1>Московская электронная школа</h1>
+            <div class="user-profile">Учитель: <span id="teacher-name"></span> <button onclick="logout()">Выйти</button></div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab('schedule')">Расписание</button>
+            <button class="tab-button" onclick="openTab('journal')">Журнал</button>
+            <button class="tab-button" onclick="openTab('homework')">Домашние задания</button>
+            <button class="tab-button" onclick="openTab('messages')">Сообщения</button>
+            <button class="tab-button" onclick="openTab('notifications')">Уведомления</button>
+            <button class="tab-button" onclick="openTab('reports')">Отчеты</button>
+            <button class="tab-button" onclick="openTab('diary')">Дневник ученика</button>
+            <button class="tab-button" onclick="openTab('profile')">Профиль</button>
+            <button class="tab-button" onclick="openTab('settings')">Настройки</button>
+        </div>
+
+        <div id="schedule" class="tab-content active">
+            <h2>Расписание уроков</h2>
+            <table class="schedule-table" id="schedule-table">
+                <tr>
+                    <th>День недели</th>
+                    <th>№</th>
+                    <th>Время</th>
+                    <th>Предмет</th>
+                    <th>Класс</th>
+                    <th>Кабинет</th>
+                    <th>Материалы</th>
+                </tr>
+                <tr><td rowspan="6">Понедельник</td><td>1</td><td>08:30-09:15</td><td>Математика</td><td>6А</td><td>301</td><td><button onclick="addMaterial('Понедельник', 1)">Добавить</button></td></tr>
+                <tr><td>2</td><td>09:25-10:10</td><td>Русский</td><td>6Б</td><td>302</td><td><button onclick="addMaterial('Понедельник', 2)">Добавить</button></td></tr>
+                <tr><td>3</td><td>10:20-11:05</td><td>Английский</td><td>7А</td><td>303</td><td><button onclick="addMaterial('Понедельник', 3)">Добавить</button></td></tr>
+                <tr><td>4</td><td>11:15-12:00</td><td>Труды</td><td>7Е</td><td>Мастерская</td><td><button onclick="addMaterial('Понедельник', 4)">Добавить</button></td></tr>
+                <tr><td>5</td><td>12:10-12:55</td><td>Математика</td><td>6В</td><td>304</td><td><button onclick="addMaterial('Понедельник', 5)">Добавить</button></td></tr>
+                <tr><td>6</td><td>13:05-13:50</td><td>Русский</td><td>6Г</td><td>305</td><td><button onclick="addMaterial('Понедельник', 6)">Добавить</button></td></tr>
+            </table>
+        </div>
+
+        <div id="journal" class="tab-content">
+            <h2>Электронный журнал</h2>
+            <div style="margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                <select id="class-filter" onchange="loadJournal()">
+                    <option value="6А">6А</option>
+                    <option value="6Б">6Б</option>
+                    <option value="6В">6В</option>
+                    <option value="6Г">6Г</option>
+                    <option value="7А">7А</option>
+                    <option value="7Е">7Е</option>
+                </select>
+                <select id="subject-filter" onchange="loadJournal()">
+                    <option value="Математика">Математика</option>
+                    <option value="Русский">Русский</option>
+                    <option value="Английский">Английский</option>
+                    <option value="Труды">Труды</option>
+                </select>
+                <input type="date" id="journal-date-start" value="2025-04-02" onchange="loadJournal()">
+                <select id="lesson-type">
+                    <option value="Обычный">Обычный урок</option>
+                    <option value="Контрольная">Контрольная</option>
+                    <option value="Практическая">Практическая работа</option>
+                </select>
+                <button onclick="exportJournal()">Экспорт в CSV</button>
+                <button onclick="showCommentModal()">Добавить комментарий</button>
+                <button onclick="showAttendanceModal()">Отметить посещаемость</button>
+            </div>
+            <div style="overflow-x: auto;">
+                <table id="journal-table">
+                    <thead><tr id="journal-header"><th>Ученик</th></tr></thead>
+                    <tbody id="journal-body"></tbody>
+                </table>
+            </div>
+            <button onclick="saveJournal()">Сохранить</button>
+        </div>
+
+        <div id="homework" class="tab-content">
+            <h2>Домашние задания</h2>
+            <div style="margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                <select id="homework-class">
+                    <option value="6А">6А</option>
+                    <option value="6Б">6Б</option>
+                    <option value="6В">6В</option>
+                    <option value="6Г">6Г</option>
+                    <option value="7А">7А</option>
+                    <option value="7Е">7Е</option>
+                </select>
+                <select id="homework-subject">
+                    <option value="Математика">Математика</option>
+                    <option value="Русский">Русский</option>
+                    <option value="Английский">Английский</option>
+                    <option value="Труды">Труды</option>
+                </select>
+                <textarea id="homework-task" placeholder="Введите задание" rows="3"></textarea>
+                <select id="homework-day">
+                    <option value="Понедельник">Понедельник</option>
+                    <option value="Вторник">Вторник</option>
+                    <option value="Среда">Среда</option>
+                    <option value="Четверг">Четверг</option>
+                    <option value="Пятница">Пятница</option>
+                </select>
+                <input type="date" id="homework-date" value="2025-04-02">
+                <input type="file" id="homework-file" accept=".pdf,.doc,.docx">
+                <button onclick="addHomework()">Добавить</button>
+            </div>
+            <table class="homework-table" id="homework-table">
+                <tr><th>Класс</th><th>Предмет</th><th>Задание</th><th>День</th><th>Срок</th><th>Файл</th></tr>
+            </table>
+        </div>
+
+        <div id="messages" class="tab-content">
+            <h2>Сообщения</h2>
+            <div style="margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                <select id="message-recipient">
+                    <option value="all">Всем классам</option>
+                    <option value="6А">6А</option>
+                    <option value="6Б">6Б</option>
+                    <option value="6В">6В</option>
+                    <option value="6Г">6Г</option>
+                    <option value="7А">7А</option>
+                    <option value="7Е">7Е</option>
+                </select>
+                <textarea id="message-text" placeholder="Введите сообщение" rows="4"></textarea>
+                <button onclick="sendMessage()">Отправить</button>
+            </div>
+            <div id="message-history"></div>
+        </div>
+
+        <div id="notifications" class="tab-content">
+            <h2>Уведомления</h2>
+            <div id="notifications-list"></div>
+        </div>
+
+        <div id="reports" class="tab-content">
+            <h2>Отчеты</h2>
+            <div style="margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                <select id="report-class">
+                    <option value="6А">6А</option>
+                    <option value="6Б">6Б</option>
+                    <option value="6В">6В</option>
+                    <option value="6Г">6Г</option>
+                    <option value="7А">7А</option>
+                    <option value="7Е">7Е</option>
+                </select>
+                <select id="report-subject">
+                    <option value="Математика">Математика</option>
+                    <option value="Русский">Русский</option>
+                    <option value="Английский">Английский</option>
+                    <option value="Труды">Труды</option>
+                </select>
+                <button onclick="generateReport()">Сформировать отчет</button>
+            </div>
+            <div id="report-output"></div>
+            <canvas id="performance-chart"></canvas>
+        </div>
+
+        <div id="diary" class="tab-content">
+            <h2>Электронный дневник ученика</h2>
+            <div style="margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                <select id="diary-class" onchange="updateStudentSelect()">
+                    <option value="6А">6А</option>
+                    <option value="6Б">6Б</option>
+                    <option value="6В">6В</option>
+                    <option value="6Г">6Г</option>
+                    <option value="7А">7А</option>
+                    <option value="7Е">7Е</option>
+                </select>
+                <select id="diary-student"></select>
+                <input type="date" id="diary-start-date" value="2025-04-02">
+                <input type="date" id="diary-end-date" value="2025-04-09">
+                <button onclick="loadDiary()">Показать дневник</button>
+            </div>
+            <div id="diary-output"></div>
+        </div>
+
+        <div id="profile" class="tab-content">
+            <h2>Профиль учителя</h2>
+            <div>
+                <label>ФИО:</label>
+                <input type="text" id="profile-name" disabled>
+            </div>
+            <div>
+                <label>Логин:</label>
+                <input type="text" id="profile-username" disabled>
+            </div>
+            <div>
+                <label>Новый пароль:</label>
+                <input type="password" id="profile-password">
+                <button onclick="updateProfile()">Сохранить</button>
+            </div>
+        </div>
+
+        <div id="settings" class="tab-content">
+            <h2>Настройки</h2>
+            <div>
+                <label>Цветовая тема:</label>
+                <select id="theme-select" onchange="applySettings()">
+                    <option value="light">Светлая</option>
+                    <option value="dark">Темная</option>
+                </select>
+            </div>
+            <div>
+                <label>Размер шрифта:</label>
+                <select id="font-size" onchange="applySettings()">
+                    <option value="12">Маленький (12px)</option>
+                    <option value="14">Средний (14px)</option>
+                    <option value="16">Большой (16px)</option>
+                </select>
+            </div>
+            <div>
+                <label>Показывать уведомления:</label>
+                <input type="checkbox" id="notifications-enabled" onchange="applySettings()" checked>
+            </div>
+            <button onclick="saveSettings()">Сохранить настройки</button>
+        </div>
+    </div>
+
+    <div class="overlay" id="modal-overlay"></div>
+    <div class="modal" id="comment-modal">
+        <h3>Добавить комментарий к уроку</h3>
+        <select id="comment-class">
+            <option value="6А">6А</option>
+            <option value="6Б">6Б</option>
+            <option value="6В">6В</option>
+            <option value="6Г">6Г</option>
+            <option value="7А">7А</option>
+            <option value="7Е">7Е</option>
+        </select>
+        <select id="comment-subject">
+            <option value="Математика">Математика</option>
+            <option value="Русский">Русский</option>
+            <option value="Английский">Английский</option>
+            <option value="Труды">Труды</option>
+        </select>
+        <input type="date" id="comment-date" value="2025-04-02">
+        <textarea id="comment-text" placeholder="Введите комментарий" rows="3"></textarea>
+        <button onclick="saveComment()">Сохранить</button>
+        <button onclick="closeCommentModal()">Закрыть</button>
+    </div>
+
+    <div class="modal" id="attendance-modal">
+        <h3>Отметить посещаемость</h3>
+        <select id="attendance-class">
+            <option value="6А">6А</option>
+            <option value="6Б">6Б</option>
+            <option value="6В">6В</option>
+            <option value="6Г">6Г</option>
+            <option value="7А">7А</option>
+            <option value="7Е">7Е</option>
+        </select>
+        <input type="date" id="attendance-date" value="2025-04-02">
+        <div id="attendance-list" style="max-height: 300px; overflow-y: auto;"></div>
+        <button onclick="saveAttendance()">Сохранить</button>
+        <button onclick="closeAttendanceModal()">Закрыть</button>
+    </div>
+
+    <div class="modal" id="material-modal">
+        <h3>Добавить материалы к уроку</h3>
+        <p id="material-lesson-info"></p>
+        <input type="file" id="material-file" accept=".pdf,.pptx,.docx">
+        <textarea id="material-description" placeholder="Описание материала" rows="3"></textarea>
+        <button onclick="saveMaterial()">Сохранить</button>
+        <button onclick="closeMaterialModal()">Закрыть</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const students = {
+            "6А": [
+                "Бекмухамбетов Александр Артурович",
+                "Белинский Егор Андреевич",
+                "Бычкова Софья Павловна",
+                "Глумов Алексей Юрьевич",
+                "Колюгаева Екатерина Алексеевна",
+                "Корягин Михаил Юрьевич",
+                "Корякина Виктория Дмитриевна",
+                "Логвинов Александр Дмитриевич",
+                "Макарова Таисия Кирилловна",
+                "Миллер Виктория Дмитриевна",
+                "Михайленко Ева Алексеевна",
+                "Михайлова Анастасия Владимировна",
+                "Мокрецова Дарья Владимировна",
+                "Пенькова Анастасия Сергеевна",
+                "Петухов Даниил Олегович",
+                "Петухов Илья Олегович",
+                "Полиматиди Георгий Дионисович",
+                "Прибыльский Сергей Андреевич",
+                "Пучкова Анна Дмитриевна",
+                "Пшеничникова Алиса Андреевна",
+                "Савченко Артем Витальевич",
+                "Селиванова Анастасия Антоновна",
+                "Соколова Надежда Ивановна",
+                "Сущенко Мирослава Ивановна",
+                "Царев Павел Дмитриевич",
+                "Черняк Дарья Станиславовна",
+                "Шатилов Ярослав Алексеевич",
+                "Шестакова Мария Александровна",
+                "Хорошилов Алессандро Франкович",
+                "Якимов Назар Ярославович"
+            ],
+            "6Б": Array.from({ length: 30 }, (_, i) => `Иванов${i + 1} Иван Иванович`),
+            "6В": Array.from({ length: 30 }, (_, i) => `Петров${i + 1} Петр Петрович`),
+            "6Г": Array.from({ length: 30 }, (_, i) => `Сидоров${i + 1} Сидор Сидорович`),
+            "7А": Array.from({ length: 30 }, (_, i) => `Кузнецов${i + 1} Алексей Михайлович`),
+            "7Е": Array.from({ length: 30 }, (_, i) => `Смирнов${i + 1} Дмитрий Сергеевич`)
+        };
+
+        let journalData = {};
+        let users = {};
+        let homeworkData = [];
+        let comments = [];
+        let notifications = [
+            { id: 1, text: "Контрольная по математике в 6А завтра в 08:30" },
+            { id: 2, text: "Родительское собрание 7Е - 05.04.2025" }
+        ];
+        let attendanceData = {};
+        let messages = [];
+        let materials = {};
+        let settings = { theme: 'light', fontSize: '14', notificationsEnabled: true };
+
+        try {
+            journalData = JSON.parse(localStorage.getItem('journalData')) || {};
+            users = JSON.parse(localStorage.getItem('users')) || {};
+            homeworkData = JSON.parse(localStorage.getItem('homeworkData')) || [];
+            comments = JSON.parse(localStorage.getItem('comments')) || [];
+            notifications = JSON.parse(localStorage.getItem('notifications')) || notifications;
+            attendanceData = JSON.parse(localStorage.getItem('attendanceData')) || {};
+            messages = JSON.parse(localStorage.getItem('messages')) || [];
+            materials = JSON.parse(localStorage.getItem('materials')) || {};
+            settings = JSON.parse(localStorage.getItem('settings')) || settings;
+            if (!users['denispanchenko_1992']) {
+                users['denispanchenko_1992'] = { password: 'denisi_tryd92', name: 'Денис Панченко Сергеевич' };
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+        } catch (e) {
+            console.error('Ошибка при загрузке данных:', e);
+            localStorage.clear();
+            users['denispanchenko_1992'] = { password: 'denisi_tryd92', name: 'Денис Панченко Сергеевич' };
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            setTimeout(() => errorElement.style.display = 'none', 3000);
+        }
+
+        function register() {
+            const username = document.getElementById('reg-username').value.trim();
+            const password = document.getElementById('reg-password').value.trim();
+            const name = document.getElementById('reg-name').value.trim();
+
+            if (!username || !password || !name) {
+                showError('reg-error', 'Заполните все поля');
+                return;
+            }
+            if (users[username]) {
+                showError('reg-error', 'Пользователь уже существует');
+                return;
+            }
+            users[username] = { password, name };
+            localStorage.setItem('users', JSON.stringify(users));
+            alert('Регистрация успешна! Войдите.');
+            showLogin();
+        }
+
+        function login() {
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+
+            if (!username || !password) {
+                showError('login-error', 'Заполните все поля');
+                return;
+            }
+            if (users[username] && users[username].password === password) {
+                document.getElementById('login-form').classList.remove('active');
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('main-content').style.display = 'block';
+                document.getElementById('teacher-name').textContent = users[username].name;
+                localStorage.setItem('currentUser', username);
+                loadJournal();
+                loadHomework();
+                loadProfile();
+                loadNotifications();
+                loadSettings();
+                applySettings();
+                updateStudentSelect();
+            } else {
+                showError('login-error', 'Неверный логин или пароль');
+            }
+        }
+
+        function showLogin(event) {
+            event.preventDefault();
+            document.getElementById('register-form').classList.remove('active');
+            document.getElementById('login-form').classList.add('active');
+            document.getElementById('login-form').style.display = 'block';
+            document.getElementById('register-form').style.display = 'none';
+        }
+
+        function showRegister(event) {
+            event.preventDefault();
+            document.getElementById('login-form').classList.remove('active');
+            document.getElementById('register-form').classList.add('active');
+            document.getElementById('register-form').style.display = 'block';
+            document.getElementById('login-form').style.display = 'none';
+        }
+
+        function logout() {
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('login-form').style.display = 'block';
+            document.getElementById('login-form').classList.add('active');
+            localStorage.removeItem('currentUser');
+        }
+
+        function openTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            if (tabName === 'journal') loadJournal();
+            if (tabName === 'homework') loadHomework();
+            if (tabName === 'notifications') loadNotifications();
+            if (tabName === 'profile') loadProfile();
+            if (tabName === 'messages') loadMessages();
+            if (tabName === 'settings') loadSettings();
+            if (tabName === 'diary') updateStudentSelect();
+        }
+
+        function generateDates(startDate, endDate) {
+            const dates = [];
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                dates.push(d.toLocaleDateString('ru', { day: '2-digit', month: '2-digit' }));
+            }
+            return dates;
+        }
+
+        function loadJournal() {
+            const className = document.getElementById('class-filter').value;
+            const subject = document.getElementById('subject-filter').value;
+            const startDate = document.getElementById('journal-date-start').value;
+            const tbody = document.getElementById('journal-body');
+            const thead = document.getElementById('journal-header');
+            tbody.innerHTML = '';
+            thead.innerHTML = '<th>Ученик</th>';
+
+            const dates = generateDates(startDate, new Date(startDate).setDate(new Date(startDate).getDate() + 29));
+            dates.forEach(date => {
+                const th = document.createElement('th');
+                th.textContent = date;
+                thead.appendChild(th);
+            });
+
+            students[className].forEach(student => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${student}</td>`;
+                dates.forEach(date => {
+                    const key = `${className}_${subject}_${student}_${date}`;
+                    const attendanceKey = `${className}_${student}_${date}`;
+                    const grade = attendanceData[attendanceKey] === 'н' ? 'н' : (journalData[key] || '');
+                    row.innerHTML += `<td><input type="text" min="2" max="5" value="${grade}" data-key="${key}" oninput="updateGradeColor(this)" ${grade === 'н' ? 'disabled' : ''}></td>`;
+                });
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateGradeColor(input) {
+            const value = input.value.trim();
+            input.classList.remove('grade-2', 'grade-3', 'grade-4', 'grade-5');
+            if (value === '2') input.classList.add('grade-2');
+            else if (value === '3') input.classList.add('grade-3');
+            else if (value === '4') input.classList.add('grade-4');
+            else if (value === '5') input.classList.add('grade-5');
+        }
+
+        function saveJournal() {
+            const inputs = document.querySelectorAll('#journal-table input');
+            inputs.forEach(input => {
+                const key = input.getAttribute('data-key');
+                const value = input.value.trim();
+                if (value && value !== 'н') journalData[key] = value;
+                else delete journalData[key];
+            });
+            localStorage.setItem('journalData', JSON.stringify(journalData));
+            alert('Оценки сохранены');
+        }
+
+        function exportJournal() {
+            const className = document.getElementById('class-filter').value;
+            const subject = document.getElementById('subject-filter').value;
+            const dates = generateDates(document.getElementById('journal-date-start').value, new Date(document.getElementById('journal-date-start').value).setDate(new Date(document.getElementById('journal-date-start').value).getDate() + 29));
+            let csv = 'Ученик,' + dates.join(',') + '\n';
+            students[className].forEach(student => {
+                let row = [student];
+                dates.forEach(date => {
+                    const key = `${className}_${subject}_${student}_${date}`;
+                    row.push(journalData[key] || attendanceData[`${className}_${student}_${date}`] || '');
+                });
+                csv += row.join(',') + '\n';
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `journal_${className}_${subject}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function showCommentModal() {
+            document.getElementById('modal-overlay').classList.add('active');
+            document.getElementById('comment-modal').classList.add('active');
+        }
+
+        function closeCommentModal() {
+            document.getElementById('modal-overlay').classList.remove('active');
+            document.getElementById('comment-modal').classList.remove('active');
+        }
+
+        function saveComment() {
+            const className = document.getElementById('comment-class').value;
+            const subject = document.getElementById('comment-subject').value;
+            const date = document.getElementById('comment-date').value;
+            const text = document.getElementById('comment-text').value.trim();
+            if (!text) {
+                alert('Введите комментарий');
+                return;
+            }
+            comments.push({ className, subject, date, text });
+            localStorage.setItem('comments', JSON.stringify(comments));
+            closeCommentModal();
+            alert('Комментарий сохранен');
+        }
+
+        function showAttendanceModal() {
+            const className = document.getElementById('class-filter').value;
+            const date = document.getElementById('journal-date-start').value;
+            document.getElementById('attendance-class').value = className;
+            document.getElementById('attendance-date').value = date;
+
+            const list = document.getElementById('attendance-list');
+            list.innerHTML = '';
+            students[className].forEach(student => {
+                const key = `${className}_${student}_${date}`;
+                const attended = attendanceData[key] === 'н' ? '' : 'checked';
+                list.innerHTML += `
+                    <div style="margin: 5px 0;">
+                        <label><input type="checkbox" ${attended} data-key="${key}"> ${student}</label>
+                    </div>`;
+            });
+            document.getElementById('modal-overlay').classList.add('active');
+            document.getElementById('attendance-modal').classList.add('active');
+        }
+
+        function closeAttendanceModal() {
+            document.getElementById('modal-overlay').classList.remove('active');
+            document.getElementById('attendance-modal').classList.remove('active');
+        }
+
+        function saveAttendance() {
+            const checkboxes = document.querySelectorAll('#attendance-list input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                const key = cb.getAttribute('data-key');
+                attendanceData[key] = cb.checked ? 'п' : 'н';
+            });
+            localStorage.setItem('attendanceData', JSON.stringify(attendanceData));
+            closeAttendanceModal();
+            alert('Посещаемость сохранена');
+            loadJournal();
+        }
+
+        function addHomework() {
+            const className = document.getElementById('homework-class').value;
+            const subject = document.getElementById('homework-subject').value;
+            const task = document.getElementById('homework-task').value.trim();
+            const day = document.getElementById('homework-day').value;
+            const date = document.getElementById('homework-date').value;
+            const fileInput = document.getElementById('homework-file');
+            const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : '';
+
+            if (!task) {
+                alert('Введите задание');
+                return;
+            }
+            homeworkData.push({ className, subject, task, day, date, fileName });
+            localStorage.setItem('homeworkData', JSON.stringify(homeworkData));
+            loadHomework();
+            document.getElementById('homework-task').value = '';
+            fileInput.value = '';
+        }
+
+        function loadHomework() {
+            const table = document.getElementById('homework-table');
+            table.innerHTML = '<tr><th>Класс</th><th>Предмет</th><th>Задание</th><th>День</th><th>Срок</th><th>Файл</th></tr>';
+            homeworkData.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${item.className}</td><td>${item.subject}</td><td>${item.task}</td><td>${item.day}</td><td>${item.date}</td><td>${item.fileName || '-'}</td>`;
+                table.appendChild(row);
+            });
+        }
+
+        function sendMessage() {
+            const recipient = document.getElementById('message-recipient').value;
+            const text = document.getElementById('message-text').value.trim();
+            if (!text) {
+                alert('Введите сообщение');
+                return;
+            }
+            const timestamp = new Date().toLocaleString('ru');
+            messages.push({ recipient, text, timestamp });
+            localStorage.setItem('messages', JSON.stringify(messages));
+            document.getElementById('message-text').value = '';
+            loadMessages();
+            if (settings.notificationsEnabled) {
+                notifications.push({ id: Date.now(), text: `Сообщение отправлено ${recipient} в ${timestamp}` });
+                localStorage.setItem('notifications', JSON.stringify(notifications));
+                loadNotifications();
+            }
+        }
+
+        function loadMessages() {
+            const history = document.getElementById('message-history');
+            history.innerHTML = '';
+            messages.forEach(msg => {
+                const div = document.createElement('div');
+                div.className = 'notification';
+                div.innerHTML = `<b>${msg.timestamp}</b> - ${msg.recipient}: ${msg.text}`;
+                history.appendChild(div);
+            });
+        }
+
+        function loadNotifications() {
+            const list = document.getElementById('notifications-list');
+            list.innerHTML = '';
+            if (settings.notificationsEnabled) {
+                notifications.forEach(notif => {
+                    const div = document.createElement('div');
+                    div.className = 'notification';
+                    div.innerHTML = `${notif.text} <button onclick="deleteNotification(${notif.id})">Удалить</button>`;
+                    list.appendChild(div);
+                });
+            }
+        }
+
+        function deleteNotification(id) {
+            notifications = notifications.filter(notif => notif.id !== id);
+            localStorage.setItem('notifications', JSON.stringify(notifications));
+            loadNotifications();
+        }
+
+        function addMaterial(day, lessonNumber) {
+            document.getElementById('material-lesson-info').textContent = `Урок: ${day}, №${lessonNumber}`;
+            document.getElementById('modal-overlay').classList.add('active');
+            document.getElementById('material-modal').classList.add('active');
+            document.getElementById('material-file').dataset.lesson = `${day}_${lessonNumber}`;
+        }
+
+        function closeMaterialModal() {
+            document.getElementById('modal-overlay').classList.remove('active');
+            document.getElementById('material-modal').classList.remove('active');
+        }
+
+        function saveMaterial() {
+            const lessonKey = document.getElementById('material-file').dataset.lesson;
+            const fileInput = document.getElementById('material-file');
+            const description = document.getElementById('material-description').value.trim();
+            const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : '';
+            
+            if (!fileName && !description) {
+                alert('Добавьте файл или описание');
+                return;
+            }
+            materials[lessonKey] = { fileName, description };
+            localStorage.setItem('materials', JSON.stringify(materials));
+            closeMaterialModal();
+            loadScheduleMaterials();
+            document.getElementById('material-file').value = '';
+            document.getElementById('material-description').value = '';
+        }
+
+        function loadScheduleMaterials() {
+            const table = document.getElementById('schedule-table');
+            const rows = table.getElementsByTagName('tr');
+            for (let i = 1; i < rows.length; i++) {
+                const day = rows[i].parentNode.rows[0].cells[0].textContent;
+                const lessonNumber = rows[i].cells[1].textContent;
+                const key = `${day}_${lessonNumber}`;
+                const materialCell = rows[i].cells[6];
+                if (materials[key]) {
+                    materialCell.innerHTML = `${materials[key].fileName || ''} ${materials[key].description || ''} <button onclick="addMaterial('${day}', ${lessonNumber})">Изменить</button>`;
+                }
+            }
+        }
+
+        function generateReport() {
+            const className = document.getElementById('report-class').value;
+            const subject = document.getElementById('report-subject').value;
+            const output = document.getElementById('report-output');
+            output.innerHTML = '';
+
+            let report = `<h3>Отчет по ${subject} для ${className}</h3>`;
+            const grades = {};
+            const averages = [];
+            students[className].forEach(student => {
+                grades[student] = [];
+                generateDates('2025-04-02', '2025-04-30').forEach(date => {
+                    const key = `${className}_${subject}_${student}_${date}`;
+                    if (journalData[key] && !isNaN(journalData[key])) grades[student].push(journalData[key]);
+                });
+                const avg = grades[student].length ? (grades[student].reduce((a, b) => +a + +b, 0) / grades[student].length).toFixed(2) : '-';
+                averages.push(avg !== '-' ? avg : 0);
+            });
+
+            report += '<table><tr><th>Ученик</th><th>Оценки</th><th>Средний балл</th></tr>';
+            let i = 0;
+            for (const [student, studentGrades] of Object.entries(grades)) {
+                const avg = averages[i++];
+                report += `<tr><td>${student}</td><td>${studentGrades.join(', ') || '-'}</td><td>${avg}</td></tr>`;
+            }
+            report += '</table>';
+            output.innerHTML = report;
+
+            const ctx = document.getElementById('performance-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: students[className],
+                    datasets: [{
+                        label: 'Средний балл',
+                        data: averages,
+                        backgroundColor: '#005eb8',
+                        borderColor: '#003087',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateStudentSelect() {
+            const className = document.getElementById('diary-class').value;
+            const studentSelect = document.getElementById('diary-student');
+            studentSelect.innerHTML = '';
+            students[className].forEach(student => {
+                const option = document.createElement('option');
+                option.value = student;
+                option.textContent = student;
+                studentSelect.appendChild(option);
+            });
+        }
+
+        function loadDiary() {
+            const className = document.getElementById('diary-class').value;
+            const student = document.getElementById('diary-student').value;
+            const startDate = document.getElementById('diary-start-date').value;
+            const endDate = document.getElementById('diary-end-date').value;
+            const output = document.getElementById('diary-output');
+            output.innerHTML = '';
+
+            const dates = generateDates(startDate, endDate);
+            let diaryHTML = `<h3>Дневник ученика: ${student} (${className})</h3>`;
+            diaryHTML += '<h4>Оценки</h4><table><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Посещаемость</th></tr>';
+
+            const subjects = ['Математика', 'Русский', 'Английский', 'Труды'];
+            dates.forEach(date => {
+                subjects.forEach(subject => {
+                    const key = `${className}_${subject}_${student}_${date}`;
+                    const attendanceKey = `${className}_${student}_${date}`;
+                    const grade = journalData[key] || '';
+                    const attendance = attendanceData[attendanceKey] === 'н' ? 'Отсутствовал' : 'Присутствовал';
+                    if (grade || attendanceData[attendanceKey]) {
+                        diaryHTML += `<tr><td>${date}</td><td>${subject}</td><td>${grade || '-'}</td><td>${attendance}</td></tr>`;
+                    }
+                });
+            });
+            diaryHTML += '</table>';
+
+            diaryHTML += '<h4>Домашние задания</h4><table><tr><th>Дата</th><th>Предмет</th><th>Задание</th><th>Файл</th></tr>';
+            homeworkData.filter(hw => hw.className === className && dates.includes(new Date(hw.date).toLocaleDateString('ru', { day: '2-digit', month: '2-digit' }))).forEach(hw => {
+                diaryHTML += `<tr><td>${hw.date}</td><td>${hw.subject}</td><td>${hw.task}</td><td>${hw.fileName || '-'}</td></tr>`;
+            });
+            diaryHTML += '</table>';
+
+            output.innerHTML = diaryHTML;
+        }
+
+        function loadProfile() {
+            const currentUser = localStorage.getItem('currentUser');
+            if (currentUser && users[currentUser]) {
+                document.getElementById('profile-name').value = users[currentUser].name;
+                document.getElementById('profile-username').value = currentUser;
+            }
+        }
+
+        function updateProfile() {
+            const currentUser = localStorage.getItem('currentUser');
+            const newPassword = document.getElementById('profile-password').value.trim();
+            if (newPassword) {
+                users[currentUser].password = newPassword;
+                localStorage.setItem('users', JSON.stringify(users));
+                alert('Пароль обновлен');
+                document.getElementById('profile-password').value = '';
+            }
+        }
+
+        function loadSettings() {
+            document.getElementById('theme-select').value = settings.theme;
+            document.getElementById('font-size').value = settings.fontSize;
+            document.getElementById('notifications-enabled').checked = settings.notificationsEnabled;
+        }
+
+        function applySettings() {
+            const theme = document.getElementById('theme-select').value;
+            const fontSize = document.getElementById('font-size').value;
+            const notificationsEnabled = document.getElementById('notifications-enabled').checked;
+
+            if (theme === 'dark') {
+                document.body.classList.add('dark-theme');
+            } else {
+                document.body.classList.remove('dark-theme');
+            }
+
+            document.body.style.fontSize = `${fontSize}px`;
+            settings = { theme, fontSize, notificationsEnabled };
+        }
+
+        function saveSettings() {
+            applySettings();
+            localStorage.setItem('settings', JSON.stringify(settings));
+            alert('Настройки сохранены');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('login-form').style.display = 'block';
+            document.getElementById('login-form').classList.add('active');
+            loadScheduleMaterials();
+        });
+    </script>
+</body>
+</html>
